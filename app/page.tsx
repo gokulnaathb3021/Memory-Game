@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import styles from "./page.module.css";
 import SingleCard from "./components/SingleCard";
+import useSound from "use-sound";
 
 type cardObj = {
   src: string;
@@ -23,6 +24,9 @@ export default function Home() {
   const [choiceOne, setChoiceOne] = useState<cardObj | null>(null);
   const [choiceTwo, setChoiceTwo] = useState<cardObj | null>(null);
   const [disabled, setDisabled] = useState<boolean>(false);
+  const [match] = useSound("matching.mp3");
+  const [completed] = useSound("completed.mp3");
+  const [matchCount, setMatchCount] = useState<number>(0);
 
   // shuffle cards
   const shuffleCards = () => {
@@ -39,6 +43,7 @@ export default function Home() {
       id: Math.random(),
     }));
 
+    setMatchCount(0);
     setChoiceOne(null);
     setChoiceTwo(null);
     setCards(shuffledCards);
@@ -55,6 +60,7 @@ export default function Home() {
     if (choiceOne && choiceTwo) {
       setDisabled(true);
       if (choiceOne.src === choiceTwo.src) {
+        setMatchCount((prevCount) => prevCount + 1);
         setCards((prevCards) => {
           return prevCards.map((card) => {
             if (card.src === choiceOne.src) {
@@ -84,6 +90,13 @@ export default function Home() {
   useEffect(() => {
     shuffleCards();
   }, []);
+
+  // soud effect
+  useEffect(() => {
+    if (matchCount === 0) return;
+    if (matchCount < 6) match();
+    if (matchCount === 6) completed();
+  }, [matchCount]);
 
   return (
     <div className={styles.app}>
