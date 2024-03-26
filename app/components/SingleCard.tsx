@@ -29,7 +29,7 @@ const SingleCard: React.FC<cardProp> = ({
           className={styles.front}
         />
         <Image
-          src="/Images/cover.png"
+          src="/images/cover.png"
           width={85}
           height={85}
           alt=""
