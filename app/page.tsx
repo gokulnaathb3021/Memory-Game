@@ -1,95 +1,111 @@
-import Image from "next/image";
+"use client";
+import { useEffect, useState } from "react";
 import styles from "./page.module.css";
+import SingleCard from "./components/SingleCard";
+
+type cardObj = {
+  src: string;
+  id: number;
+  matched: boolean;
+};
+const cardImages = [
+  { src: "/images/helmet-1.png", id: 0, matched: false },
+  { src: "/images/potion-1.png", id: 0, matched: false },
+  { src: "/images/ring-1.png", id: 0, matched: false },
+  { src: "/images/scroll-1.png", id: 0, matched: false },
+  { src: "/images/shield-1.png", id: 0, matched: false },
+  { src: "/images/sword-1.png", id: 0, matched: false },
+];
 
 export default function Home() {
+  const [cards, setCards] = useState<cardObj[]>([]);
+  const [turns, setTurns] = useState<number>(0);
+  const [choiceOne, setChoiceOne] = useState<cardObj | null>(null);
+  const [choiceTwo, setChoiceTwo] = useState<cardObj | null>(null);
+  const [disabled, setDisabled] = useState<boolean>(false);
+
+  // shuffle cards
+  const shuffleCards = () => {
+    let shuffledCards = [...cardImages, ...cardImages];
+    for (let i = shuffledCards.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffledCards[i], shuffledCards[j]] = [
+        shuffledCards[j],
+        shuffledCards[i],
+      ];
+    }
+    shuffledCards = shuffledCards.map((card) => ({
+      ...card,
+      id: Math.random(),
+    }));
+
+    setChoiceOne(null);
+    setChoiceTwo(null);
+    setCards(shuffledCards);
+    setTurns(0);
+  };
+
+  // handle a choice
+  const handleChoice = (card: cardObj) => {
+    choiceOne ? setChoiceTwo(card) : setChoiceOne(card);
+  };
+
+  // compare the 2 selected cards
+  useEffect(() => {
+    if (choiceOne && choiceTwo) {
+      setDisabled(true);
+      if (choiceOne.src === choiceTwo.src) {
+        setCards((prevCards) => {
+          return prevCards.map((card) => {
+            if (card.src === choiceOne.src) {
+              return { ...card, matched: true };
+            } else return card;
+          });
+        });
+        resetTurn();
+      } else {
+        setTimeout(() => {
+          resetTurn();
+        }, 1000);
+      }
+    }
+  }, [choiceOne, choiceTwo]);
+  console.log(cards);
+
+  // reset choices and increase the turns
+  const resetTurn = () => {
+    setChoiceOne(null);
+    setChoiceTwo(null);
+    setTurns((prevTurns) => prevTurns + 1);
+    setDisabled(false);
+  };
+
+  // starting a game on first visit.
+  useEffect(() => {
+    shuffleCards();
+  }, []);
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
+    <div className={styles.app}>
+      <h2>Magic Match</h2>
+      <button onClick={shuffleCards}>New Game</button>
+
+      <div className={styles.cardGrid}>
+        {cards.map((card) => (
+          <SingleCard
+            key={card.id}
+            card={card}
+            handleChoice={handleChoice}
+            flipped={
+              card.id === choiceOne?.id ||
+              card.id === choiceTwo?.id ||
+              card.matched
+            }
+            disabled={disabled}
+          />
+        ))}
       </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+      <p>Turns: {turns}</p>
+    </div>
   );
 }
