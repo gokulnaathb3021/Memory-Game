@@ -24,7 +24,7 @@
 .aboutGame button {
   background: none;
   border: 2px solid #fff;
-  padding: 6px 12px;
+  padding: 10px 30px;
   border-radius: 4px;
   color: #fff;
   font-weight: bold;
@@ -36,4 +36,14 @@
 .aboutGame button:hover {
   background: #c23866;
   color: #fff;
+}
+
+@media screen and (max-width: 510px) {
+  .aboutGame {
+    width: 90%;
+  }
+
+  .aboutGame p {
+    margin-top: 0;
+  }
 }
