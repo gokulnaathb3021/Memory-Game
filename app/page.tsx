@@ -1,9 +1,10 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./page.module.css";
 import SingleCard from "./components/SingleCard";
 import useSound from "use-sound";
 import AboutGameModal from "./components/AboutGameModal";
+import GameOverModal from "./components/GameOverModal";
 
 type cardObj = {
   src: string;
@@ -29,6 +30,7 @@ export default function Home() {
   const [completed] = useSound("completed.mp3");
   const [matchCount, setMatchCount] = useState<number>(0);
   const [play, setPlay] = useState<boolean>(false);
+  const dialogRef = useRef<HTMLDialogElement | null>(null);
 
   // shuffle cards
   const shuffleCards = () => {
@@ -98,30 +100,44 @@ export default function Home() {
     shuffleCards();
   }, []);
 
-  // soud effect
+  // sound effect
   useEffect(() => {
     if (matchCount === 0) return;
     if (matchCount < 6)
       setTimeout(() => {
         match();
       }, 500);
-    if (matchCount === 6)
+    if (matchCount === 6) {
       setTimeout(() => {
         completed();
+        setTimeout(() => {
+          dialogRef.current!.showModal();
+        }, 500);
       }, 500);
+    }
   }, [matchCount]);
 
   // close modal
-  const closeModal = () => {
-    setPlay(true);
+  const toggleModel = () => {
+    setPlay((prevState) => !prevState);
+  };
+
+  // close gameOver modal and play again
+  const playAgain = () => {
+    shuffleCards();
+    dialogRef.current!.close();
   };
 
   return (
     <>
-      {!play && <AboutGameModal closeModal={closeModal} />}
+      {!play && <AboutGameModal toggleModal={toggleModel} />}
+      <GameOverModal ref={dialogRef} turns={turns} playAgain={playAgain} />
       <div className={styles.app}>
         <h2>Magic Match</h2>
-        <button onClick={shuffleCards}>New Game</button>
+        <div className={styles.buttons}>
+          <button onClick={toggleModel}>?</button>
+          <button onClick={shuffleCards}>New Game</button>
+        </div>
 
         <div className={styles.cardGrid}>
           {cards.map((card) => (
@@ -138,12 +154,7 @@ export default function Home() {
             />
           ))}
         </div>
-        {matchCount === 6 && (
-          <p>
-            You solved it in {turns} turn{turns > 1 ? "s" : ""}.
-          </p>
-        )}
-        {matchCount !== 6 && <p>Turns: {turns}</p>}
+        <p>Turns: {turns}</p>
       </div>
     </>
   );

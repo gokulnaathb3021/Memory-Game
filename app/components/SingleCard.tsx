@@ -19,7 +19,7 @@ const SingleCard: React.FC<cardProp> = ({
   flipped,
   disabled,
 }) => {
-  const [flip] = useSound("flip.mp3");
+  const [flip] = useSound("_flip.mp3");
   return (
     <div className={styles.card}>
       <div className={flipped ? styles.flipped : ""}>

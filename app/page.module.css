@@ -22,3 +22,24 @@
   grid-template-columns: 1fr 1fr 1fr 1fr;
   grid-gap: 3px;
 }
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  align-items: center;
+}
+
+.buttons button:nth-child(1) {
+  font-size: 10px;
+  width: fit-content;
+  height: fit-content;
+  cursor: pointer;
+  padding: 5px;
+}
+
+@media screen and (max-width: 510px) {
+  .buttons button:nth-child(1) {
+    font-size: 13px;
+  }
+}

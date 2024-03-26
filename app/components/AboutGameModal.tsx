@@ -1,10 +1,10 @@
 import styles from "./AboutGameModal.module.css";
 
 type AboutGameModalProps = {
-  closeModal: () => void;
+  toggleModal: () => void;
 };
 
-const AboutGameModal: React.FC<AboutGameModalProps> = ({ closeModal }) => {
+const AboutGameModal: React.FC<AboutGameModalProps> = ({ toggleModal }) => {
   return (
     <div className={styles.aboutGame}>
       <h1>Magic Match</h1>
@@ -14,7 +14,7 @@ const AboutGameModal: React.FC<AboutGameModalProps> = ({ closeModal }) => {
         match, they will flip back over. The game ends when you uncover all the
         matching pairs of images.
       </p>
-      <button onClick={closeModal}>PLAY</button>
+      <button onClick={toggleModal}>PLAY</button>
     </div>
   );
 };
