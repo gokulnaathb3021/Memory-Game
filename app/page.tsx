@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import styles from "./page.module.css";
 import SingleCard from "./components/SingleCard";
 import useSound from "use-sound";
+import AboutGameModal from "./components/AboutGameModal";
 
 type cardObj = {
   src: string;
@@ -27,6 +28,7 @@ export default function Home() {
   const [match] = useSound("matching.mp3");
   const [completed] = useSound("completed.mp3");
   const [matchCount, setMatchCount] = useState<number>(0);
+  const [play, setPlay] = useState<boolean>(false);
 
   // shuffle cards
   const shuffleCards = () => {
@@ -109,32 +111,40 @@ export default function Home() {
       }, 500);
   }, [matchCount]);
 
-  return (
-    <div className={styles.app}>
-      <h2>Magic Match</h2>
-      <button onClick={shuffleCards}>New Game</button>
+  // close modal
+  const closeModal = () => {
+    setPlay(true);
+  };
 
-      <div className={styles.cardGrid}>
-        {cards.map((card) => (
-          <SingleCard
-            key={card.id}
-            card={card}
-            handleChoice={handleChoice}
-            flipped={
-              card.id === choiceOne?.id ||
-              card.id === choiceTwo?.id ||
-              card.matched
-            }
-            disabled={disabled}
-          />
-        ))}
+  return (
+    <>
+      {!play && <AboutGameModal closeModal={closeModal} />}
+      <div className={styles.app}>
+        <h2>Magic Match</h2>
+        <button onClick={shuffleCards}>New Game</button>
+
+        <div className={styles.cardGrid}>
+          {cards.map((card) => (
+            <SingleCard
+              key={card.id}
+              card={card}
+              handleChoice={handleChoice}
+              flipped={
+                card.id === choiceOne?.id ||
+                card.id === choiceTwo?.id ||
+                card.matched
+              }
+              disabled={disabled}
+            />
+          ))}
+        </div>
+        {matchCount === 6 && (
+          <p>
+            You solved it in {turns} turn{turns > 1 ? "s" : ""}.
+          </p>
+        )}
+        {matchCount !== 6 && <p>Turns: {turns}</p>}
       </div>
-      {matchCount === 6 && (
-        <p>
-          You solved it in {turns} turn{turns > 1 ? "s" : ""}.
-        </p>
-      )}
-      {matchCount !== 6 && <p>Turns: {turns}</p>}
-    </div>
+    </>
   );
 }
