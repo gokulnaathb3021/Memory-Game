@@ -134,7 +134,7 @@ export default function Home() {
           You solved it in {turns} turn{turns > 1 ? "s" : ""}.
         </p>
       )}
-      <p>Turns: {turns}</p>
+      {matchCount !== 6 && <p>Turns: {turns}</p>}
     </div>
   );
 }
