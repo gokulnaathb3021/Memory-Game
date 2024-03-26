@@ -52,7 +52,12 @@ export default function Home() {
 
   // handle a choice
   const handleChoice = (card: cardObj) => {
-    choiceOne ? setChoiceTwo(card) : setChoiceOne(card);
+    // choiceOne ? setChoiceTwo(card) : setChoiceOne(card);
+    if (choiceOne) {
+      setChoiceTwo(card);
+    } else {
+      setChoiceOne(card);
+    }
   };
 
   // compare the 2 selected cards
@@ -94,8 +99,14 @@ export default function Home() {
   // soud effect
   useEffect(() => {
     if (matchCount === 0) return;
-    if (matchCount < 6) match();
-    if (matchCount === 6) completed();
+    if (matchCount < 6)
+      setTimeout(() => {
+        match();
+      }, 500);
+    if (matchCount === 6)
+      setTimeout(() => {
+        completed();
+      }, 500);
   }, [matchCount]);
 
   return (
@@ -118,6 +129,11 @@ export default function Home() {
           />
         ))}
       </div>
+      {matchCount === 6 && (
+        <p>
+          You solved it in {turns} turn{turns > 1 ? "s" : ""}.
+        </p>
+      )}
       <p>Turns: {turns}</p>
     </div>
   );

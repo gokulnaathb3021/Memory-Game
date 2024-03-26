@@ -1,5 +1,6 @@
 import Image from "next/image";
 import styles from "./SingleCard.module.css";
+import useSound from "use-sound";
 
 type cardProp = {
   card: {
@@ -18,6 +19,7 @@ const SingleCard: React.FC<cardProp> = ({
   flipped,
   disabled,
 }) => {
+  const [flip] = useSound("flip.mp3");
   return (
     <div className={styles.card}>
       <div className={flipped ? styles.flipped : ""}>
@@ -35,7 +37,10 @@ const SingleCard: React.FC<cardProp> = ({
           alt=""
           className={styles.back}
           onClick={() => {
-            if (!disabled) handleChoice(card);
+            if (!disabled) {
+              flip();
+              handleChoice(card);
+            }
           }}
         />
       </div>
