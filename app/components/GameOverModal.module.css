@@ -12,6 +12,10 @@
   backdrop-filter: blur(10px);
 }
 
+.gameOverDialog button {
+  cursor: pointer;
+}
+
 .playAgain {
   background: none;
   border: 2px solid #fff;
